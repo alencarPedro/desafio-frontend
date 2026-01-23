@@ -1,5 +1,3 @@
-// src/services/geocoder.ts
-
 export interface PhotonFeature {
     properties: {
       name: string;
@@ -19,11 +17,7 @@ export  interface PhotonResponse {
     features: PhotonFeature[];
   }
 
-  /**
-   * Busca lugares usando o Photon Geocoder
-   * @param query - Texto de busca (ex: "São Paulo")
-   * @returns Lista de lugares encontrados
-   */
+
   export async function searchPlaces(query: string): Promise<PhotonFeature[]> {
     if (!query || query.trim().length < 2) {
       return [];
