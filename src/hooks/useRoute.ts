@@ -1,4 +1,3 @@
-// src/hooks/useRoute.ts
 import { useState } from 'react';
 import { createRoute, getRouteDetails } from '../services/routes';
 import type { RouteInput, RouteDetails } from '../types/route';
@@ -14,15 +13,10 @@ export function useRoute() {
     setRoute(null);
 
     try {
-      // 1. Criar a rota (mutation) - retorna apenas o ID
       const routeId = await createRoute(input);
 
-      // 2. Aguardar um pouco e buscar os detalhes
-      // Nota: Em produção, você usaria subscription para aguardar o status "done"
-      // Por enquanto, vamos fazer polling simples
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // 3. Buscar detalhes da rota usando o ID retornado
       const routeDetails = await getRouteDetails(routeId);
 
       if (routeDetails) {

@@ -1,4 +1,3 @@
-// src/hooks/useVehicles.ts
 import { useState, useEffect } from 'react';
 import { getVehicleList, type Vehicle } from '../services/vehicles';
 
