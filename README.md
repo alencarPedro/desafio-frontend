@@ -220,5 +220,3 @@ A aplicação foi estruturada seguindo o **Princípio de Responsabilidade Única
 ## 📄 Licença
 
 Este projeto é privado.
-
-
