@@ -1,4 +1,3 @@
-// src/lib/chargetrip-client.ts
 const CHARGETRIP_ENDPOINT = 'https://api.chargetrip.io/graphql';
 
 export async function chargetripQuery(query: string, variables?: Record<string, unknown>) {
@@ -9,12 +8,10 @@ export async function chargetripQuery(query: string, variables?: Record<string, 
     throw new Error('Chargetrip credentials not found in environment variables');
   }
 
-  // Criar o body exatamente como o playground faz
   const body: { query: string; variables?: Record<string, unknown> } = {
     query,
   };
 
-  // Só adiciona variables se existir
   if (variables) {
     body.variables = variables;
   }
@@ -31,12 +28,10 @@ export async function chargetripQuery(query: string, variables?: Record<string, 
 
   const result = await response.json();
 
-  // Verificar erros GraphQL primeiro (mesmo com status 200 podem ter erros)
   if (result.errors) {
     throw new Error(result.errors[0]?.message || 'GraphQL error');
   }
 
-  // Se não tem data, lançar erro
   if (!result.data) {
     throw new Error('No data returned from API');
   }
