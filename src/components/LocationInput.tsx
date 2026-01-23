@@ -1,12 +1,14 @@
-// src/components/LocationInput.tsx
 import { useState, useEffect, useRef } from 'react';
 import { searchPlaces, formatPlaceName, type PhotonFeature } from '../services/geocoder';
+import { Loader2 } from 'lucide-react';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 interface LocationInputProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  onLocationSelect: (location: { name: string; coordinates: [number, number] }) => void;
+  onLocationSelect: (location: { name: string; coordinates: [number, number] } | null) => void;
   placeholder?: string;
 }
 
@@ -24,11 +26,8 @@ export function LocationInput({
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-
-
   // Buscar sugestões quando o usuário digita
   useEffect(() => {
-
     if (isSelected) {
       return;
     }
@@ -47,7 +46,7 @@ export function LocationInput({
     }, 300); // Debounce de 300ms
 
     return () => clearTimeout(timeoutId);
-  }, [value]);
+  }, [value, isSelected]);
 
   // Fechar sugestões ao clicar fora
   useEffect(() => {
@@ -82,6 +81,10 @@ export function LocationInput({
     if (isSelected) {
       setIsSelected(false);
     }
+    // Se o input foi limpo, limpar também a localização selecionada
+    if (newValue.trim() === '') {
+      onLocationSelect(null);
+    }
   };
 
   const handleFocus = () => {
@@ -91,12 +94,12 @@ export function LocationInput({
   };
 
   return (
-    <div className="relative">
-      <label htmlFor={label.toLowerCase()} className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="relative w-full">
+      <label htmlFor={label.toLowerCase()} className="block text-sm font-medium text-gray-300 mb-1">
         {label}
       </label>
       <div className="relative">
-        <input
+        <Input
           ref={inputRef}
           type="text"
           id={label.toLowerCase()}
@@ -104,11 +107,11 @@ export function LocationInput({
           onChange={(e) => handleChange(e.target.value)}
           onFocus={handleFocus}
           placeholder={placeholder}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full pr-10 bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 focus:border-sky-400"
         />
         {isLoading && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+            <Loader2 className="h-4 w-4 animate-spin text-sky-400" />
           </div>
         )}
       </div>
@@ -116,26 +119,29 @@ export function LocationInput({
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+          className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg max-h-60 overflow-auto"
         >
           {suggestions.map((feature, index) => (
-            <button
+            <Button
               key={index}
               type="button"
+              variant="ghost"
               onClick={() => handleSelect(feature)}
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+              className="w-full justify-start text-left h-auto py-2 px-4 rounded-none hover:bg-gray-700 text-white"
             >
-              <div className="font-medium">{formatPlaceName(feature)}</div>
-              {feature.properties.country && (
-                <div className="text-sm text-gray-500">{feature.properties.country}</div>
-              )}
-            </button>
+            <div className="flex flex-col items-start w-full">
+              <span className="font-medium text-white">{formatPlaceName(feature)}</span>
+                {feature.properties.country && (
+                <span className="text-xs text-gray-400">{feature.properties.country}</span>
+                )}
+              </div>
+            </Button>
           ))}
         </div>
       )}
 
       {showSuggestions && suggestions.length === 0 && value.length >= 2 && !isLoading && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg p-4 text-center text-gray-500">
+        <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg p-4 text-center text-gray-400">
           Nenhum lugar encontrado
         </div>
       )}
